@@ -106,8 +106,8 @@ public class VanishProcessor implements Listener {
 
     @EventHandler
     public void onPing(PaperServerListPingEvent event) {
-        // Remove vanished players from the sample/count
-        event.getSample().removeIf(profile -> vanishedPlayers.contains(profile.getId()));
+        // Remove vanished players from the sample/count using the modern Paper API
+        event.getListedPlayers().removeIf(info -> vanishedPlayers.contains(info.id()));
         
         // Update count for privacy
         int vanishedCount = 0;
