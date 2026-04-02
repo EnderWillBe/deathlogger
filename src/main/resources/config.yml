@@ -1,0 +1,2 @@
+webhook-url: "https://discord.com/api/webhooks/YOUR_WEBHOOK_URL_HERE"
+message-format: "**%player%** just died: `%message%`"

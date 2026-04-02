@@ -1,0 +1,4 @@
+updates:
+  enabled: true
+  version-url: "https://raw.githubusercontent.com/EnderWillBe/deathlogger/refs/heads/main/version.txt"
+  download-url: "https://github.com/EnderWillBe/deathlogger/releases/download/v1.1/DeathLogger-1.0-SNAPSHOT.jar"

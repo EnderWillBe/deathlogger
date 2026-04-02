@@ -1,0 +1,7 @@
+name: DeathLogger
+version: 1.3
+main: com.showtime.deathlogger.DeathLogger
+api-version: '1.21'
+prefix: DeathLogger
+authors: [ showtime ]
+description: Sends player death messages to a Discord Webhook.
