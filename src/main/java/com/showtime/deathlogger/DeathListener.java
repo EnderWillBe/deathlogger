@@ -6,6 +6,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
@@ -75,10 +76,40 @@ public class DeathListener implements Listener {
         });
 
         // 2. Invisibility Check
+        // 2. Smart Invisibility Check for Death Messages
         Player killer = player.getKiller();
         if (killer != null && killer.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
-            event.setDeathMessage(player.getName() + " was killed by \u00A7ksomething");
-            deathMessage = player.getName() + " was killed by something invisible";
+            String victimName = player.getName();
+            String anonymousKiller = "An Anonymous Player";
+            
+            // Determine death cause and weapon
+            ItemStack weapon = killer.getInventory().getItemInMainHand();
+            String weaponName = null;
+            
+            if (weapon != null && weapon.getType() != Material.AIR && weapon.hasItemMeta()) {
+                if (weapon.getItemMeta().hasDisplayName()) {
+                    weaponName = PlainTextComponentSerializer.plainText().serialize(weapon.getItemMeta().displayName());
+                }
+            }
+
+            // Detect death cause (Projectile vs Melee)
+            if (player.getLastDamageCause() != null) {
+                EntityDamageEvent.DamageCause cause = player.getLastDamageCause().getCause();
+                if (cause == EntityDamageEvent.DamageCause.PROJECTILE) {
+                    deathMessage = victimName + " was shot by " + anonymousKiller;
+                } else {
+                    deathMessage = victimName + " was slain by " + anonymousKiller;
+                }
+            } else {
+                deathMessage = victimName + " was killed by " + anonymousKiller;
+            }
+
+            // Append item name if it exists
+            if (weaponName != null && !weaponName.isEmpty()) {
+                deathMessage += " using [" + weaponName + "]";
+            }
+
+            event.setDeathMessage(deathMessage);
         }
 
         // 3. Webhook Logic
