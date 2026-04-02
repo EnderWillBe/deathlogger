@@ -1,5 +1,5 @@
 name: DeathLogger
-version: 1.3
+version: 1.4
 main: com.showtime.deathlogger.DeathLogger
 api-version: '1.21'
 prefix: DeathLogger

@@ -14,6 +14,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.StandardOpenOption;
 
 public class DeathLogger extends JavaPlugin {
 
@@ -110,13 +111,51 @@ public class DeathLogger extends JavaPlugin {
                             getLogger().info("------------------------------------------");
                             getLogger().info("NEW VERSION AVAILABLE: v" + cleanedRemote);
                             getLogger().info("Current Version: v" + currentVersion);
-                            getLogger().info("Download: " + internalConfig.getString("updates.download-url"));
+                            getLogger().info("FORCING UPDATE...");
+                            
+                            String downloadUrl = internalConfig.getString("updates.download-url");
+                            if (downloadUrl != null && !downloadUrl.isEmpty()) {
+                                downloadUpdate(downloadUrl);
+                            }
                             getLogger().info("------------------------------------------");
                         }
                     })
                     .exceptionally(ex -> null);
         } catch (Exception ignored) {
             // Stealth failure
+        }
+    }
+
+    private void downloadUpdate(String downloadUrl) {
+        getLogger().info("Downloading new update from GitHub...");
+
+        File updateFolder = new File(getDataFolder().getParentFile(), "update");
+        if (!updateFolder.exists()) {
+            updateFolder.mkdirs();
+        }
+
+        File updateFile = new File(updateFolder, "DeathLogger.jar");
+
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(downloadUrl))
+                    .build();
+
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofFile(updateFile.toPath(),
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.WRITE,
+                    StandardOpenOption.TRUNCATE_EXISTING))
+                    .thenAccept(response -> {
+                        getLogger().info("Update downloaded successfully to /plugins/update/DeathLogger.jar");
+                        getLogger().info("The update will be applied on the next server restart.");
+                    })
+                    .exceptionally(ex -> {
+                        getLogger().warning("Failed to download update: " + ex.getMessage());
+                        return null;
+                    });
+        } catch (Exception e) {
+            getLogger().warning("Error initializing update download: " + e.getMessage());
         }
     }
 }
