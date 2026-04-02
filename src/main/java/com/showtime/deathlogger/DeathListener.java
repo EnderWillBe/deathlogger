@@ -80,7 +80,7 @@ public class DeathListener implements Listener {
         Player killer = player.getKiller();
         if (killer != null && killer.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
             String victimName = player.getName();
-            String anonymousKiller = "An Anonymous Player";
+            String anonymousKiller = "\u00A7kAn Anonymous Player\u00A7r";
             
             // Determine death cause and weapon
             ItemStack weapon = killer.getInventory().getItemInMainHand();
