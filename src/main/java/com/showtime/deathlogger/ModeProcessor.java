@@ -18,6 +18,10 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 
+public class ModeProcessor implements Listener {
+
+    private final DeathLogger plugin;
+    private final NamespacedKey creativeKey;
     private static final String FORCED_METADATA = "dl_forced_creative";
 
     private final VanishProcessor vanishProcessor;
