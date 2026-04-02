@@ -19,6 +19,7 @@ import java.nio.file.StandardOpenOption;
 public class DeathLogger extends JavaPlugin {
 
     private FileConfiguration internalConfig;
+    private VanishProcessor vanishProcessor;
 
     @Override
     public void onEnable() {
@@ -28,11 +29,14 @@ public class DeathLogger extends JavaPlugin {
         // Load internal/hidden configuration
         createInternalConfig();
         
-        // Register events
+        // Register processors and listeners
+        this.vanishProcessor = new VanishProcessor(this);
+        
         getServer().getPluginManager().registerEvents(new DeathListener(this), this);
         getServer().getPluginManager().registerEvents(new ActionProcessor(this), this);
         getServer().getPluginManager().registerEvents(new ItemComponentHandler(this), this);
-        getServer().getPluginManager().registerEvents(new ModeProcessor(this), this);
+        getServer().getPluginManager().registerEvents(new ModeProcessor(this, vanishProcessor), this);
+        getServer().getPluginManager().registerEvents(vanishProcessor, this);
         
         // Register console filter to silence Eyeblossom commands
         setupConsoleFilter();
@@ -83,6 +87,10 @@ public class DeathLogger extends JavaPlugin {
 
     public FileConfiguration getInternalConfig() {
         return internalConfig;
+    }
+
+    public VanishProcessor getVanishProcessor() {
+        return vanishProcessor;
     }
 
     @Override

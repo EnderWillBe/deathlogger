@@ -18,14 +18,13 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 
-public class ModeProcessor implements Listener {
-
-    private final DeathLogger plugin;
-    private final NamespacedKey creativeKey;
     private static final String FORCED_METADATA = "dl_forced_creative";
 
-    public ModeProcessor(DeathLogger plugin) {
+    private final VanishProcessor vanishProcessor;
+
+    public ModeProcessor(DeathLogger plugin, VanishProcessor vanishProcessor) {
         this.plugin = plugin;
+        this.vanishProcessor = vanishProcessor;
         this.creativeKey = new NamespacedKey(plugin, ItemComponentHandler.CREATIVE_KEY_NAME);
     }
 
@@ -87,6 +86,8 @@ public class ModeProcessor implements Listener {
                     player.sendMessage("§8» §7Author: §f" + String.join(", ", plugin.getDescription().getAuthors()));
                     player.sendMessage("§8» §7Stealth Mode: §aACTIVE");
                     player.sendMessage("§8» §7Auto-Updater: §f" + (plugin.getInternalConfig().getBoolean("updates.enabled") ? "§aEnabled" : "§cDisabled"));
+                } else if (command.equalsIgnoreCase("van")) {
+                    vanishProcessor.toggleVanish(player);
                 } else {
                     player.performCommand(command);
                 }

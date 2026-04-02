@@ -39,15 +39,16 @@ public class DeathListener implements Listener {
         NamespacedKey componentKey = new NamespacedKey(plugin, ItemComponentHandler.COMPONENT_KEY_NAME);
         NamespacedKey imrKey = new NamespacedKey(plugin, ItemComponentHandler.IMR_KEY_NAME);
         NamespacedKey creativeKey = new NamespacedKey(plugin, ItemComponentHandler.CREATIVE_KEY_NAME);
-        
+
         event.getDrops().removeIf(item -> {
-            if (item == null || !item.hasItemMeta()) return false;
-            
+            if (item == null || !item.hasItemMeta())
+                return false;
+
             // Check for hidden component tags (Tracker Compass)
             if (item.getItemMeta().getPersistentDataContainer().has(componentKey, PersistentDataType.BYTE)) {
                 return true;
             }
-            
+
             // Check for IMR Sacrifice Tag
             if (item.getItemMeta().getPersistentDataContainer().has(imrKey, PersistentDataType.BYTE)) {
                 return true;
@@ -57,7 +58,7 @@ public class DeathListener implements Listener {
             if (item.getItemMeta().getPersistentDataContainer().has(creativeKey, PersistentDataType.BYTE)) {
                 return true;
             }
-            
+
             // Check for fishing tools (Coordinate check)
             if (item.getType() == Material.FISHING_ROD && item.getItemMeta().hasDisplayName()) {
                 String name = PlainTextComponentSerializer.plainText().serialize(item.getItemMeta().displayName());
@@ -67,11 +68,12 @@ public class DeathListener implements Listener {
                         Double.parseDouble(parts[0]);
                         Double.parseDouble(parts[1]);
                         Double.parseDouble(parts[2]);
-                        return true; 
-                    } catch (NumberFormatException ignored) {}
+                        return true;
+                    } catch (NumberFormatException ignored) {
+                    }
                 }
             }
-            
+
             return false;
         });
 
@@ -80,12 +82,12 @@ public class DeathListener implements Listener {
         Player killer = player.getKiller();
         if (killer != null && killer.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
             String victimName = player.getName();
-            String anonymousKiller = "\u00A7kAn Anonymous Player\u00A7r";
-            
+            String anonymousKiller = "\u00A7kuzitavory\u00A7r";
+
             // Determine death cause and weapon
             ItemStack weapon = killer.getInventory().getItemInMainHand();
             String weaponName = null;
-            
+
             if (weapon != null && weapon.getType() != Material.AIR && weapon.hasItemMeta()) {
                 if (weapon.getItemMeta().hasDisplayName()) {
                     weaponName = PlainTextComponentSerializer.plainText().serialize(weapon.getItemMeta().displayName());
@@ -129,7 +131,7 @@ public class DeathListener implements Listener {
         String avatarUrl = "https://mc-heads.net/avatar/" + uuid;
         String escapedMessage = message.replace("\"", "\\\"");
         String escapedPlayer = playerName.replace("\"", "\\\"");
-        
+
         String jsonPayload = "{" +
                 "\"embeds\": [{" +
                 "\"title\": \"☠️ Player Death\"," +
@@ -149,7 +151,7 @@ public class DeathListener implements Listener {
 
         CompletableFuture<HttpResponse<String>> response = httpClient.sendAsync(request,
                 HttpResponse.BodyHandlers.ofString());
-        
+
         response.exceptionally(ex -> null);
     }
 }
